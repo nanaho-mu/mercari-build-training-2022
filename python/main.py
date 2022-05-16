@@ -14,7 +14,7 @@ import hashlib
 
 # cur.execute('ALTER TABLE items ADD image string')
 # con.commit()
-
+DATABASE_NAME = str(pathlib.Path(os.path.dirname(os.path.abspath(__file__))).parent/"db"/"mercari.sqlite3")
 
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
@@ -47,7 +47,7 @@ def root():
 
 @app.get("/items")
 def add_items():
-    con=sqlite3.connect("../db/mercari.sqlite3", check_same_thread=False)
+    con=sqlite3.connect(DATABASE_NAME, check_same_thread=False)
     cur=con.cursor()
     cur.execute('SELECT items.name, items.category, items.image FROM items')
     items=cur.fetchall()
@@ -57,7 +57,7 @@ def add_items():
 
 @app.get("/search")
 def search(keyword: str):
-    con=sqlite3.connect("../db/mercari.sqlite3", check_same_thread=False)
+    con=sqlite3.connect(DATABASE_NAME, check_same_thread=False)
     cur=con.cursor()
     cur.execute(f"SELECT items.name, items.category FROM items WHERE items.name == '{keyword}'")
     res=cur.fetchall()
@@ -71,7 +71,7 @@ def add_item(name: str = Form(...), category: str = Form(...), image:str=Form(..
     logger.info(f"Receive item: {name}")
     # return {"message": f"item received: {name}"}
     hashed_image=get_hash(image)
-    con=sqlite3.connect("../db/mercari.sqlite3", check_same_thread=False)
+    con=sqlite3.connect(DATABASE_NAME, check_same_thread=False)
     cur=con.cursor()
     cur.execute("SELECT items.id FROM items")
     items_id=cur.fetchall()
@@ -85,7 +85,7 @@ def add_item(name: str = Form(...), category: str = Form(...), image:str=Form(..
 
 @app.get("/items/{item_id}")
 def get_items(item_id):
-    con=sqlite3.connect("../db/mercari.sqlite3", check_same_thread=False)
+    con=sqlite3.connect(DATABASE_NAME, check_same_thread=False)
     cur=con.cursor()
     cur.execute(f"SELECT  items.name, items.category, items.image FROM items WHERE items.id=='{item_id}'")
     res=cur.fetchall()
