@@ -1,0 +1,2 @@
+CREATE TABLE items(id int, name string, category string)
+ALTER TABLE items ADD image string
